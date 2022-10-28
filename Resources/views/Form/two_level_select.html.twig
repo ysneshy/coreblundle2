@@ -1,0 +1,48 @@
+{% extends 'ClarolineCoreBundle::form_theme.html.twig' %}
+
+{% block twolevelselect_widget %}
+    {% spaceless %}
+        <div class="two_level_select">
+            {{ block('hidden_widget') }}
+        </div>
+        <script type="text/javascript">
+            $(document).ready(function () {
+                var choices = {{form.vars['choices']|json_encode()|raw}};
+                var choicesTree = {};
+                var preselectedValuePath = buildChoicesTree(choices, choicesTree, [], "{{form.vars['value']}}");
+                if (preselectedValuePath == null) {
+                    preselectedValuePath = [choices[0]['label']];
+                }
+                var choicesTreeOptions = {
+                    preselect:{"{{form.vars['id']}}":preselectedValuePath},
+                    choose:''
+                };
+                $("{{"#"~form.vars['id']}}").optionTree(choicesTree, choicesTreeOptions);
+            });
+            function buildChoicesTree(choices, choicesTree, pathToNode, preselectedValue)
+            {
+                var preselectedValuePath = null;
+                for (var key in choices) {
+                    if (typeof choices[key].label != 'undefined') {
+                        choicesTree[choices[key].label] = choices[key].value;
+                        if (preselectedValue == choices[key].value) {
+                            preselectedValuePath = pathToNode.slice();
+                            preselectedValuePath.push(choices[key].label);
+                        }
+                    } else {
+                        choicesTree[key] = {};
+                        var newPathToNode = pathToNode.slice();
+                        newPathToNode.push(key);
+                        var tempPreselectedPath = buildChoicesTree(choices[key], choicesTree[key], newPathToNode, preselectedValue);
+                        if (tempPreselectedPath != null) {
+                            preselectedValuePath = tempPreselectedPath;
+                        }
+                    }
+                }
+
+                return preselectedValuePath;
+            }
+        </script>
+        <script src="{{ asset('bundles/frontend/jquery/plugin/jquery.optionTree.js') }}"></script>
+    {% endspaceless %}
+{% endblock %}

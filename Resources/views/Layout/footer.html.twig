@@ -1,0 +1,23 @@
+<div id="footer">
+    <div class="container">
+        <div class="row">
+            <p>
+                {% if not is_granted('ROLE_USER') and footerLogin %}
+                    <a href="{{ path("claro_desktop_open") }}"><i class="fa fa-user"></i> {{ "login" | trans({}, "platform") }}</a> &nbsp;&nbsp;&nbsp;&nbsp;
+                {% endif %}
+                {% if not is_granted('ROLE_USER') and footerWorkspaces %}
+                    <a href="{{ path("claro_workspace_list") }}"><i class="fa fa-book"></i> {{ "workspaces" | trans({}, "platform") }}</a> &nbsp;&nbsp;&nbsp;&nbsp;
+                {% endif %}
+
+                {% if is_granted('ROLE_USER') or (not is_granted('ROLE_USER') and not headerLocale) %}
+                    <span class="pull-right locale-select label label-default">{{ app.request.locale | upper }}</span>
+                {% endif %}
+
+                {% if not footerMessage is empty %}{{ footerMessage }}{% endif %}
+                <span{% if ((footerLogin or footerWorkspaces) and not is_granted('ROLE_USER')) or not footerMessage is empty %} class="pull-right"{% endif %}>
+                    {{ 'Powered by' | trans({}, 'platform') }} <a href="http://www.claroline.net">Claroline</a>
+                </span>
+            </p>
+        </div>
+    </div>
+</div>

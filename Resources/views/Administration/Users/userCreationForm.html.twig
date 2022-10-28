@@ -1,0 +1,60 @@
+{% extends "ClarolineCoreBundle:Administration:layout.html.twig" %}
+
+{% block title %}{{ parent() ~ ' - ' ~ 'add_user' | trans({}, 'platform') | striptags | raw }}{% endblock %}
+
+{% block breadcrumb %}
+    {{
+        macros.breadcrumbs([
+            {
+                'icon': 'fa fa-cog',
+                'name': 'administration'|trans({}, 'platform'),
+                'href': path('claro_admin_index')
+            },
+            {
+                'name': 'users_management'|trans({}, 'platform'),
+                'href': path('claro_admin_users_management')
+            },
+            {
+                'name': 'add_user'|trans({}, 'platform'),
+                'href':''
+            }
+        ])
+    }}
+{% endblock %}
+
+{% block section_content %}
+    <div class="panel-heading">
+        <h3 class="panel-title">{{ 'user_creation'|trans({}, 'platform') }}</h3>
+    </div>
+    <form role="form" class="form-horizontal" action="{{ path('claro_admin_create_user') }}" method="post" {{ form_enctype(form_complete_user) }} id="form_complete_user" autocomplete="off">
+        <div class="panel-body">
+            {% if error is not empty %}
+                <div class="alert alert-warning"> {{ error|trans({}, 'platform') }} </div>
+            {% endif %}
+            {% for role in unavailableRoles %}
+                {% if role.getName() == 'ROLE_USER' %}
+                    <div class="alert alert-danger"> {{ 'user_limit_reached'|trans({}, 'platform') }}</div>
+                {% else %}
+                    <div class="alert alert-warning"> {{ 'role_limit_reached'|trans({'%translationKey%': role.getTranslationKey()|trans({}, 'platform')}, 'platform') }}</div>
+                {% endif %}
+            {% endfor %}
+            {{ form_widget(form_complete_user) }}
+        </div>
+        <div class="panel-footer">
+            <button type="submit" class="btn btn-primary">{{ 'ok'|trans({}, 'platform') }}</button>
+            <a class="btn btn-default" href="{{ path('claro_admin_users_management') }}" role="button">
+                {{ 'cancel'|trans({}, 'platform') }}
+            </a>
+        </div>
+    </form>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        //disable unavailable checkboxes
+        {% for role in unavailableRoles %}
+            $('#profile_form_creation_platformRoles_' + {{ role.getId() }}).attr('disabled', true);
+        {% endfor %}
+    </script>
+{% endblock %}

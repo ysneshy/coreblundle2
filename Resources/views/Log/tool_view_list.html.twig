@@ -1,0 +1,77 @@
+<style type="text/css">
+    #logFilter label {font-weight: normal;}
+    #logFilter div.row {padding-bottom: 3px;}
+</style>
+<div class="panel-heading">
+    <h3 class="panel-title">{{ 'logs'|trans({}, 'tools') }}</h3>
+</div>
+<div class="panel-body logs-container">
+    <div>
+        {% if 0 < pager.nbResults %}
+            {% include 'ClarolineCoreBundle:Log:count_by_day_chart.html.twig' %}
+            <br/><br/>
+        {% else %}
+            <div style="text-align:center;">
+               <h3>{{ 'log_no_actions_found'|trans({}, 'log') }}.</h3>
+            </div>
+        {% endif %}
+
+        <legend>
+            {{ 'Filter actions'|trans({}, 'platform') }}
+        </legend>
+
+        <form role="form" id="logFilter" action="{{ filterFormAction }}" method="GET" class="form-inline">
+            {{ form_errors(filterForm) }}
+            <div class="row">
+                <div class="form-group col-md-12">
+                    {{ form_label(filterForm.action) }}
+                    {{ form_errors(filterForm.action) }}
+                    <div class="{{ filterForm.action.vars.theme_options.control_width }}">
+                        {{ form_widget(filterForm.action) }}
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-md-12">
+                    {{ form_label(filterForm.range) }}
+                    {{ form_errors(filterForm.range) }}
+                    <div class="{{ filterForm.range.vars.theme_options.control_width }}">
+                        {{ form_widget(filterForm.range) }}
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-md-12">
+                    {{ form_label(filterForm.user) }}
+                    {{ form_errors(filterForm.user) }}
+                    <div class="{{ filterForm.user.vars.theme_options.control_width }}">
+                        {{ form_widget(filterForm.user) }}
+                    </div>
+                </div>
+            </div>
+            <br/>
+            {{ form_rest(filterForm) }}
+            <input type="submit" value="{{ 'log_filter_actions'|trans({}, 'log') }}" class="btn btn-primary"/>
+        </form>
+        <br/><br/>
+    </div>
+    {% if 0 < pager.nbResults %}
+        <legend>
+            {{ 'Action List'|trans({}, 'platform') }}
+        </legend>
+
+        <div class="text-center">
+            {% if pager.haveToPaginate %}
+                {{ pagination }}
+            {% endif %}
+        </div>
+
+        {% include 'ClarolineCoreBundle:Log:view_list.html.twig' with {'logs': pager.currentPageResults, 'isDesktop': isDesktop} %}
+
+        <div class="text-center">
+            {% if pager.haveToPaginate %}
+                {{ pagination }}
+            {% endif %}
+        </div>
+    {% endif %}
+</div>

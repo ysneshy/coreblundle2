@@ -1,0 +1,133 @@
+{% extends 'ClarolineCoreBundle:Administration:layout.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('bundles/frontend/bootstrap-colorpicker/dist/css/bootstrap-colorpicker.css') }}" screen="media" />
+{% endblock %}
+
+{% set themeTitle = "New theme" | trans({}, "theme") %}
+
+{% if theme is defined %}
+    {% set themeTitle = "Edit theme" | trans({}, "theme") %}
+{% endif %}
+
+{% block title %}{{ parent() ~ ' - ' ~ themeTitle | striptags | raw }}{% if theme is defined %} ({{ theme.name  | striptags | raw }}){% endif %}{% endblock %}
+
+{% block breadcrumb %}
+    {{
+        macros.breadcrumbs([
+            {
+                'icon': 'fa fa-cog',
+                'name': 'administration'|trans({}, 'platform'),
+                'href': path('claro_admin_index')
+            },
+            {
+                'name': 'parameters'|trans({}, 'platform'),
+                'href': path('claro_admin_index')
+            },
+            {
+                'name': 'appearance'|trans({}, 'platform'),
+                'href': path('claro_admin_parameters_appearance')
+            },
+            {
+                'name': 'Theme Generator'|trans({}, 'theme'),
+                'href': path('claroline_admin_theme_list')
+            },
+            {
+                'name': themeTitle,
+                'href': ''
+            }
+        ])
+    }}
+{% endblock %}
+{% block section_content %}
+    <div id="homePath" class="hide">{{ path("claro_index") }}</div>
+    <div class="panel-heading">
+        <h3 class="panel-title">
+            {{ themeTitle }}{% if theme is defined %} <em>({{ theme.name }})</em>{% endif %}
+        </h3>
+    </div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-2">
+                {{ "Theme name" | trans({}, "theme") }}:
+            </div>
+            <div class="col-md-4">
+                <input class="form-control" type="text" id="theme-name"{% if theme is defined %} value="{{ theme.getName() }}"{% endif %}>
+            </div>
+        </div>
+    </div>
+    <div class="theme-generator panel-footer">
+        <button class="btn save btn-primary"{% if theme is defined %} data-id="{{ theme.getId() }}"{% endif %}><i class="fa fa-check"></i> {{ "Save" | trans({}, "theme") }}</button>
+        <a href="{{ path("claroline_admin_theme_list") }}" class="btn btn-default" role="button"><i class="fa fa-reply"></i> {{ "Cancel" | trans({}, "theme") }}</a>
+        <button class="btn btn-default preview"{% if theme is defined %} data-id="{{ theme.getId() }}"{% endif %}><i class="fa fa-eye"></i> {{ "Preview" | trans({}, "theme") }}</button>
+        {% if theme is defined %}
+            <button class="btn btn-default dele" data-id="{{ theme.getId() }}"><i class="fa fa-trash-o"></i> {{ "Delete" | trans({}, "theme") }}</button>
+        {% endif %}
+    </div>
+
+    </div>{# end of panel #}
+    <div class="panel panel-default">
+
+        <div class="theme-parameters panel-heading">
+            <h3 class="panel-title">{{ "Theme parameters" | trans({}, "theme") }}</h3>
+        </div>
+        <div class="panel-body">
+            <div class="alert alert-info">
+                <a class="close" data-dismiss="alert" href="#" aria-hidden="true">&times;</a>
+                {{ "Our themes were designed using Bootstrap" | trans({}, "theme") }},
+                {{ "if you have a doubt about the name of an element of the GUI" | trans({}, "theme") }},
+                <a class="alert-link" href="http://getbootstrap.com/" target="_blank">{{ "please read the documentation of Bootstrap 3" | trans({}, "theme") }}.</a>
+            </div>
+            {% if parameters is defined %}
+                <div class="panel-group" id="accordion">
+                    {% for name,array in parameters.getParameters() %}
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">
+                                    <a class="accordion-toggle" data-parent="#accordion" data-toggle="collapse" href="#collapse{{ loop.index }}">
+                                        {{ name }}
+                                    </a>
+                                </h3>
+                            </div>
+                            <div id="collapse{{ loop.index }}" class="collapse">
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        {% for code,value in array %}
+                                            <tr>
+                                                <td width="40%" class="theme-code"><code>{{ code }}</code></td>
+                                                <td class="theme-value input-group">
+                                                    <span class="input-group-btn">
+                                                        <button class="btn btn-primary" type="button"><i class="fa fa-tint"></i></button>
+                                                    </span>
+                                                    <input class="form-control" type="text" value="{{ value }}"/>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                    <div class='panel panel-default'>
+                        <div class="panel-heading">
+                            <h3 class="panel-title">
+                                <a class="accordion-toggle" data-parent="#accordion" data-toggle="collapse" href="#theme-less">
+                                    {{ 'Additional style rules' | trans({}, 'platform') }}
+                                </a>
+                            </h3>
+                        </div>
+                        <div id="theme-less" class="collapse panel-body">
+                            <textarea rows="10">{{ themeLess }}</textarea>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript" src="{{ asset('bundles/frontend/bootstrap-colorpicker/dist/js/bootstrap-colorpicker.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('bundles/clarolinecore/js/theme/theme.js') }}"></script>
+{% endblock %}

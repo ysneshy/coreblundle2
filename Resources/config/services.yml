@@ -1,0 +1,88 @@
+# This file contains only services that cannot be defined using annotations.
+
+parameters:
+    claroline.form_handler.badge.class: Claroline\CoreBundle\Form\Badge\Handler\BadgeHandler
+
+services:
+
+    # array injection with annotations is not supported
+    claroline.plugin.validator:
+        class: Claroline\CoreBundle\Library\Installation\Plugin\Validator
+        arguments:
+            - routing: "@claroline.plugin.routing_checker"
+              config: "@claroline.plugin.config_checker"
+
+    # vendor classes used as service arguments
+    claroline.symfony_yaml:
+        class: Symfony\Component\Yaml\Parser
+        public: false
+
+    # doctrine repositories
+    claroline.repository.log:
+        class:           Claroline\CoreBundle\Repository\Log\LogRepository
+        factory_service: doctrine.orm.entity_manager
+        factory_method:  getRepository
+        arguments:
+            - Claroline\CoreBundle\Entity\Log\Log
+    claroline.repository.badge:
+        class:           Claroline\CoreBundle\Repository\Badge\BadgeRepository
+        factory_service: doctrine.orm.entity_manager
+        factory_method:  getRepository
+        arguments:
+            - Claroline\CoreBundle\Entity\Badge\Badge
+
+    # form
+    claroline.form.badge:
+        class: Symfony\Component\Form\Form
+        factory_method: createNamed
+        factory_service: form.factory
+        arguments: ["badge_form", "badge_form"]
+    claroline.form.badge.workspace:
+        class: Symfony\Component\Form\Form
+        factory_method: createNamed
+        factory_service: form.factory
+        arguments: ["badge_form", "badge_form_workspace"]
+    claroline.widget.form.badge_usage:
+        class: Symfony\Component\Form\Form
+        factory_method: createNamed
+        factory_service: form.factory
+        arguments: ["badge_usage_widget_form", "badge_usage_widget_config"]
+
+    # form handler
+    claroline.form_handler.badge:
+        class: %claroline.form_handler.badge.class%
+        scope: request
+        arguments:
+            - @claroline.form.badge
+            - @request
+            - @doctrine.orm.entity_manager
+            - @claroline.manager.badge
+    claroline.form_handler.badge.workspace:
+        class: %claroline.form_handler.badge.class%
+        scope: request
+        arguments:
+            - @claroline.form.badge.workspace
+            - @request
+            - @doctrine.orm.entity_manager
+            - @claroline.manager.badge
+
+    # pseudo-services used for dynamic parameter injection
+    # (see Claroline\CoreBundle\DependencyInjection\Compiler\DynamicConfigPass
+    claroline.session.storage_options:
+        class: stdClass
+        factory_service: claroline.session.storage_options_factory
+        factory_method: getOptions
+
+
+    #notification listeners
+    claroline.listener.core.notification_listener:
+        class: Claroline\CoreBundle\Listener\Notification\NotificationListener
+        calls:
+            - [setContainer, ["@service_container"]]
+        tags:
+            - { name: kernel.event_listener, event: create_notification_item_workspace-role-change_right, method: onCreateNotificationItem }
+            - { name: kernel.event_listener, event: create_notification_item_workspace-role-subscribe_user, method: onCreateNotificationItem }
+            - { name: kernel.event_listener, event: create_notification_item_workspace-role-subscribe_group, method: onCreateNotificationItem }
+            - { name: kernel.event_listener, event: create_notification_item_role-subscribe_user, method: onCreateNotificationItem }
+            - { name: kernel.event_listener, event: create_notification_item_role-subscribe_group, method: onCreateNotificationItem }
+            - { name: kernel.event_listener, event: create_notification_item_badge-awarding, method: onCreateNotificationItem }

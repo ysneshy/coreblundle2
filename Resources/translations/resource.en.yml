@@ -1,0 +1,33 @@
+activity: Activity
+update_file: Update file
+compose: 'Draw up'
+copy: Copy
+delete: Delete
+directory: Directory
+download: Download
+edit: Edit
+edit-properties: 'Edit properties'
+edit-rights: 'Edit rights'
+export: Export
+file: File
+open: Open
+open-tracking: 'View tracking'
+rename: Rename
+resource_copy_warning: 'An error occured while copying resource <%resourceName%>'
+resource_name_form_name: 'Resource name'
+resource_properties_form_accessibleFrom: 'Accessible from'
+resource_properties_form_accessibleUntil: 'Accessible until'
+resource_properties_form_copiable: Copy
+resource_properties_form_creationDate: 'Creation Date'
+resource_properties_form_creator: Creator
+resource_properties_form_deletable: Delete
+resource_properties_form_editable: Edit
+resource_properties_form_exportable: Export
+resource_properties_form_name: Name
+resource_properties_form_newIcon: Icon
+resource_properties_form_published: Published
+resource_properties_form_resourceType: 'Resource type'
+resource_shortcut: Shortcut
+text: Text
+write: Write
+administrate: Administrate
